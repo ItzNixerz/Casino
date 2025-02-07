@@ -77,35 +77,10 @@
             justify-content: center;
         }
 
-        /* Countdown Pop-up - Centered Box */
-        .popup {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: rgba(0, 0, 0, 0.9);
-            color: white;
-            font-size: 40px;
+        /* New game options */
+        .game-options {
             display: none;
-            justify-content: center;
-            align-items: center;
-            font-weight: bold;
-            text-align: center;
-            flex-direction: column;
-            width: 300px;
-            height: 200px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.7);
-            padding: 20px;
-        }
-
-        #countdown {
-            font-size: 80px;
-            margin-bottom: 20px;
-        }
-
-        #popup-message {
-            font-size: 24px;
+            margin-top: 20px;
         }
 
     </style>
@@ -141,12 +116,13 @@
 
         <!-- Game Status -->
         <div class="status" id="game-status"></div>
-    </div>
 
-    <!-- Countdown Pop-up -->
-    <div id="popup" class="popup">
-        <div id="countdown">3</div>
-        <div id="popup-message">New Match Automatically Starting in <span id="countdown-text">3</span>...</div>
+        <!-- New Game Options -->
+        <div class="game-options" id="game-options">
+            <button id="play-again">Play Again</button>
+            <button id="return-to-games">Return to Games</button>
+            <button id="return-to-home">Return to Home Page</button>
+        </div>
     </div>
 
     <script>
@@ -251,6 +227,9 @@
             updateScore(dealerHand, false);
             renderCards(playerHand, true);
             renderCards(dealerHand, false);
+
+            // Hide new game options
+            document.getElementById('game-options').style.display = 'none';
         }
 
         // Hit button logic
@@ -265,9 +244,7 @@
                 document.getElementById('game-status').textContent = 'You busted! Dealer wins!';
                 gameOver = true;
                 winner = 'Dealer';
-                setTimeout(() => {
-                    showPopup();
-                }, 1000);
+                showGameOptions();
             }
         });
 
@@ -305,34 +282,29 @@
                 winner = 'Tie';
             }
 
-            // Show countdown and start new game
-            setTimeout(() => {
-                showPopup();
-            }, 1000);
+            // Show new game options
+            showGameOptions();
         });
 
-        // Countdown and pop-up message function
-        function showPopup() {
-            const popup = document.getElementById('popup');
-            const countdownElement = document.getElementById('countdown');
-            const countdownTextElement = document.getElementById('countdown-text');
-            let countdown = 3;
-
-            popup.style.display = 'flex';
-            countdownTextElement.textContent = countdown;
-
-            const countdownInterval = setInterval(() => {
-                countdown--;
-                countdownElement.textContent = countdown;
-                countdownTextElement.textContent = countdown;
-
-                if (countdown <= 0) {
-                    clearInterval(countdownInterval);
-                    popup.style.display = 'none';
-                    startGame(); // Start a new game automatically after countdown ends
-                }
-            }, 1000);
+        // Show game options after the game ends
+        function showGameOptions() {
+            document.getElementById('game-options').style.display = 'block';
         }
+
+        // Play again button logic
+        document.getElementById('play-again').addEventListener('click', () => {
+            startGame();
+        });
+
+        // Return to Games button logic
+        document.getElementById('return-to-games').addEventListener('click', () => {
+            window.location.href = 'games.html';  // Replace with actual games page URL
+        });
+
+        // Return to Home Page button logic
+        document.getElementById('return-to-home').addEventListener('click', () => {
+            window.location.href = 'index.html';  // Replace with actual homepage URL
+        });
 
         // Start the first game
         startGame();
