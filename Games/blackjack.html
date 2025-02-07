@@ -83,6 +83,21 @@
             background-color: #34495e;
         }
 
+        /* Countdown Pop-up */
+        .popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            font-size: 50px;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -112,11 +127,15 @@
         <div class="buttons">
             <button id="hit-button">Hit</button>
             <button id="stand-button">Stand</button>
-            <button id="new-game-button">New Game</button>
         </div>
 
         <!-- Game Status -->
         <div class="status" id="game-status"></div>
+    </div>
+
+    <!-- Countdown Pop-up -->
+    <div id="popup" class="popup">
+        <div id="countdown">3</div>
     </div>
 
     <script>
@@ -236,11 +255,15 @@
             renderCards(playerHand, true);
             updateScore(playerHand, true);
 
-            if (playerScore > 21) {
+            // If player reaches 21, automatically end the game
+            if (playerScore === 21) {
+                gameOver = true;
+                document.getElementById('game-status').textContent = 'Blackjack! You Win!';
+                endGame();
+            } else if (playerScore > 21) {
                 gameOver = true;
                 document.getElementById('game-status').textContent = 'You Bust! Dealer Wins!';
-                document.getElementById('hit-button').disabled = true;
-                document.getElementById('stand-button').disabled = true;
+                endGame();
             }
         }
 
@@ -270,14 +293,40 @@
             }
 
             gameOver = true;
+            endGame();
+        }
+
+        // Function to end the game, show popup and start new game after countdown
+        function endGame() {
             document.getElementById('hit-button').disabled = true;
             document.getElementById('stand-button').disabled = true;
+            countdown(3);
+        }
+
+        // Countdown function with pop-up
+        function countdown(seconds) {
+            const popup = document.getElementById('popup');
+            const countdownDisplay = document.getElementById('countdown');
+            popup.style.display = 'flex';
+
+            let countdownValue = seconds;
+            countdownDisplay.textContent = countdownValue;
+
+            const interval = setInterval(() => {
+                countdownValue--;
+                countdownDisplay.textContent = countdownValue;
+
+                if (countdownValue <= 0) {
+                    clearInterval(interval);
+                    popup.style.display = 'none';
+                    startNewGame();
+                }
+            }, 1000);
         }
 
         // Event listeners for buttons
         document.getElementById('hit-button').addEventListener('click', hit);
         document.getElementById('stand-button').addEventListener('click', stand);
-        document.getElementById('new-game-button').addEventListener('click', startNewGame);
 
         // Initialize the game when the page loads
         window.onload = startNewGame;
@@ -285,4 +334,3 @@
 
 </body>
 </html>
-
