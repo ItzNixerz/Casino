@@ -77,12 +77,31 @@
             justify-content: center;
         }
 
-        /* New game options */
+        /* Pop-up styling */
         .game-options {
             display: none;
-            margin-top: 20px;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            font-size: 20px;
+            width: 300px;
+            height: 250px;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.7);
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
 
+        #winner-message {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
@@ -117,8 +136,9 @@
         <!-- Game Status -->
         <div class="status" id="game-status"></div>
 
-        <!-- New Game Options -->
+        <!-- New Game Options in a Pop-up -->
         <div class="game-options" id="game-options">
+            <div id="winner-message"></div>
             <button id="play-again">Play Again</button>
             <button id="return-to-games">Return to Games</button>
             <button id="return-to-home">Return to Home Page</button>
@@ -228,7 +248,7 @@
             renderCards(playerHand, true);
             renderCards(dealerHand, false);
 
-            // Hide new game options
+            // Hide new game options pop-up
             document.getElementById('game-options').style.display = 'none';
         }
 
@@ -282,12 +302,13 @@
                 winner = 'Tie';
             }
 
-            // Show new game options
+            // Show new game options in pop-up
             showGameOptions();
         });
 
-        // Show game options after the game ends
+        // Show game options in the pop-up and display winner
         function showGameOptions() {
+            document.getElementById('winner-message').textContent = `Winner: ${winner}`;
             document.getElementById('game-options').style.display = 'block';
         }
 
