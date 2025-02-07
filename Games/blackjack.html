@@ -97,7 +97,19 @@
             justify-content: center;
             align-items: center;
             font-weight: bold;
+            text-align: center;
+            flex-direction: column;
         }
+
+        #countdown {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        #popup-message {
+            font-size: 24px;
+        }
+
     </style>
 </head>
 <body>
@@ -136,6 +148,7 @@
     <!-- Countdown Pop-up -->
     <div id="popup" class="popup">
         <div id="countdown">3</div>
+        <div id="popup-message">New Match Automatically Starting in <span id="countdown-text">3</span>...</div>
     </div>
 
     <script>
@@ -307,14 +320,17 @@
         function countdown(seconds) {
             const popup = document.getElementById('popup');
             const countdownDisplay = document.getElementById('countdown');
+            const countdownText = document.getElementById('countdown-text');
             popup.style.display = 'flex';
 
             let countdownValue = seconds;
             countdownDisplay.textContent = countdownValue;
+            countdownText.textContent = countdownValue;
 
             const interval = setInterval(() => {
                 countdownValue--;
                 countdownDisplay.textContent = countdownValue;
+                countdownText.textContent = countdownValue;
 
                 if (countdownValue <= 0) {
                     clearInterval(interval);
