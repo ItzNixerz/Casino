@@ -161,7 +161,7 @@
             '4': 'https://thumbs.dreamstime.com/b/four-spades-playing-card-isolated-white-four-spades-playing-card-isolated-white-clipping-path-included-172561254.jpg', 
             '5': 'https://th.bing.com/th/id/OIP.bFrUmdzDgAGviGaQWOELLwAAAA?rs=1&pid=ImgDetMain', 
             '6': 'https://th.bing.com/th/id/R.be3130febe457ee6889af4dfd2be2e4b?rik=etJiFyMLv9DQYw&riu=http%3a%2f%2fopenclipart.org%2fimage%2f800px%2fsvg_to_png%2f192487%2f1396450565.png&ehk=E1X%2bAAmreSzWRN5p8WDyZUUgDqAUgQNibvUclnZ8VEA%3d&risl=&pid=ImgRaw&r=0', 
-            '7': 'https://th.bing.com/th/id/R.592459ef3a726a2dbb74a481e90c3a59?rik=%2fASuuRVRsy80wQ&riu=http%3a%2f%2forig02.deviantart.net%2fad55%2ff%2f2011%2f180%2f3%2fd%2f7_of_spades_by_farvei-d3kgfla.png&ehk=DBDU2INL9gngvqpbw1ODsWkm8YELZOR3ml0wMw%2bnBuc%3d&risl=&pid=ImgRaw&r=0', 
+            '7': 'https://th.bing.com/th/id/R.592459ef3a726a2dbb74a481e90c3a59?rik=%2fASuuRVRsy80wQ&riu=http%3a%2f%2forig02.deviantart.net%2fad55%2ff%2f2011%2f180%2fd%2f3%2f7_of_spades_by_farvei-d3kgfla.png&ehk=DBDU2INL9gngvqpbw1ODsWkm8YELZOR3ml0wMw%2bnBuc%3d&risl=&pid=ImgRaw&r=0', 
             '8': 'https://th.bing.com/th/id/R.59d7bc83c9f638f69001b2c218b5a0ec?rik=GHuYbeLe39mCmg&riu=http%3a%2f%2ffc05.deviantart.net%2ffs71%2ff%2f2011%2f180%2fd%2f6%2f8_of_spades_by_farvei-d3kgffc.png&ehk=brf71%2fjT2mcaBdppAywj9AxFXjd0UZ3gATo3XqmDZuY%3d&risl=&pid=ImgRaw&r=0', 
             '9': 'https://i.pinimg.com/736x/7d/47/a3/7d47a37c1bf84fdeb0a83137ca61d962.jpg', 
             '10': 'https://openclipart.org/image/2400px/svg_to_png/192491/1396450711.png', 
@@ -170,6 +170,8 @@
             'K': 'https://thumbs.dreamstime.com/b/large-index-playing-card-king-spades-american-deck-122573720.jpg', 
             'A': 'https://th.bing.com/th/id/R.6080b0e3696e34e43de2f73da1620e51?rik=%2bZ%2fesTFEWXHCfQ&riu=http%3a%2f%2fclipart-library.com%2fimages%2f8cAbMe7Ri.png&ehk=W8vndfEhLZdoJsb2oXUiAxwKLOl81Ah2Eo4QL9vA%2bjY%3d&risl=&pid=ImgRaw&r=0'
         };
+
+        const cardBackImage = 'https://th.bing.com/th/id/OIP.LUhy335_mJGIBNske747TgHaKZ?w=128&h=181&c=7&r=0&o=5&pid=1.7';
 
         let deck = [];
         let playerHand = [];
@@ -243,34 +245,32 @@
             hand.forEach((card, index) => {
                 const cardElement = document.createElement('div');
                 cardElement.classList.add('card');
+                const cardValue = card.slice(0, -1);
 
-                // Show the second card as a placeholder if it's the dealer's hidden card
-                if (isPlayer || index === 0 || !gameOver) {
-                    cardElement.innerHTML = `<img src="${cardImages[card.slice(0, -1)]}" alt="${card}" style="width:80px;height:120px;">`;
-                } else {
-                    cardElement.innerHTML = `<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Back_of_English_playing_cards.svg/1024px-Back_of_English_playing_cards.svg.png" alt="Hidden" style="width:80px;height:120px;">`;
-                }
+                // Show the card value
+                const cardImage = new Image();
+                cardImage.src = isPlayer || index > 0 ? cardImages[cardValue] : cardBackImage;  // Show card back if it's the dealer's second card
+                cardElement.appendChild(cardImage);
 
                 cardDeck.appendChild(cardElement);
             });
         }
 
-        // Start the game
+        // Start new game
         function startGame() {
-            gameOver = false;
             createDeck();
             playerHand = [drawCard(), drawCard()];
             dealerHand = [drawCard(), drawCard()];
+            playerScore = 0;
+            dealerScore = 0;
+            gameOver = false;
+            winner = '';
+            document.getElementById('game-status').textContent = '';
 
-            // Initial render of cards
-            renderCards(playerHand, true);
-            renderCards(dealerHand, false);
             updateScore(playerHand, true);
             updateScore(dealerHand, false);
-            document.getElementById('game-status').textContent = 'Game in Progress...';
-
-            // Hide popup
-            document.getElementById('popup').style.display = 'none';
+            renderCards(playerHand, true);
+            renderCards(dealerHand, false);
         }
 
         // Hit button logic
@@ -282,11 +282,11 @@
             updateScore(playerHand, true);
 
             if (playerScore > 21) {
-                document.getElementById('game-status').textContent = 'You busted! Dealer wins.';
+                document.getElementById('game-status').textContent = 'You busted! Dealer wins!';
                 gameOver = true;
                 winner = 'Dealer';
                 setTimeout(() => {
-                    showPopup(); // Show countdown popup
+                    showPopup();
                 }, 1000);
             }
         });
@@ -299,12 +299,14 @@
             renderCards(dealerHand, false);
             updateScore(dealerHand, false);
 
+            // Dealer draws cards until their score is 17 or more
             while (dealerScore < 17) {
                 dealerHand.push(drawCard());
                 renderCards(dealerHand, false);
                 updateScore(dealerHand, false);
             }
 
+            // Determine winner
             if (dealerScore > 21) {
                 document.getElementById('game-status').textContent = 'Dealer busted! You win!';
                 gameOver = true;
@@ -323,8 +325,9 @@
                 winner = 'Tie';
             }
 
+            // Show countdown and start new game
             setTimeout(() => {
-                showPopup(); // Show countdown popup
+                showPopup();
             }, 1000);
         });
 
@@ -332,17 +335,21 @@
         function showPopup() {
             const popup = document.getElementById('popup');
             const countdownElement = document.getElementById('countdown');
+            const countdownTextElement = document.getElementById('countdown-text');
             let countdown = 3;
 
             popup.style.display = 'flex';
+            countdownTextElement.textContent = countdown;
+
             const countdownInterval = setInterval(() => {
                 countdown--;
                 countdownElement.textContent = countdown;
+                countdownTextElement.textContent = countdown;
 
                 if (countdown <= 0) {
                     clearInterval(countdownInterval);
                     popup.style.display = 'none';
-                    startGame();
+                    startGame(); // Start a new game automatically after countdown ends
                 }
             }, 1000);
         }
@@ -350,6 +357,5 @@
         // Start the first game
         startGame();
     </script>
-
 </body>
 </html>
