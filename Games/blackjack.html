@@ -83,22 +83,26 @@
             background-color: #34495e;
         }
 
-        /* Countdown Pop-up */
+        /* Countdown Pop-up - Centered Box */
         .popup {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.7);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.9);
             color: white;
-            font-size: 50px;
+            font-size: 40px;
             display: none;
             justify-content: center;
             align-items: center;
             font-weight: bold;
             text-align: center;
             flex-direction: column;
+            width: 300px;
+            height: 200px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.7);
+            padding: 20px;
         }
 
         #countdown {
@@ -321,7 +325,7 @@
             const popup = document.getElementById('popup');
             const countdownDisplay = document.getElementById('countdown');
             const countdownText = document.getElementById('countdown-text');
-            popup.style.display = 'flex';
+            popup.style.display = 'block';
 
             let countdownValue = seconds;
             countdownDisplay.textContent = countdownValue;
