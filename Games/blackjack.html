@@ -135,7 +135,7 @@
             opacity: 0;
             pointer-events: none;
             z-index: 10000;
-            animation: explode 3s ease-out forwards;
+            animation: explode 1s ease-out forwards;
         }
 
         @keyframes explode {
@@ -148,7 +148,6 @@
                 opacity: 0;
             }
         }
-
     </style>
 </head>
 <body>
@@ -195,7 +194,7 @@
     </div>
 
     <!-- Celebration Sound -->
-    <audio id="celebration-sound" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio> <!-- Replace with a celebration sound URL -->
+    <audio id="celebration-sound" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
 
     <div class="confetti-container" id="confetti-container"></div>
 
@@ -290,7 +289,7 @@
         function startGame() {
             createDeck();
             playerHand = [drawCard(), drawCard()];
-            dealerHand = [drawCard(), drawCard()];
+            dealerHand = [drawCard(), drawCard()]; // Dealer starts with a hidden card
             playerScore = 0;
             dealerScore = 0;
             gameOver = false;
@@ -300,7 +299,7 @@
             updateScore(playerHand, true);
             updateScore(dealerHand, false);
             renderCards(playerHand, true);
-            renderCards(dealerHand, false);
+            renderCards(dealerHand, false); // Render only the revealed card for dealer
 
             // Hide new game options pop-up
             document.getElementById('game-options').style.display = 'none';
@@ -326,7 +325,8 @@
         document.getElementById('stand-button').addEventListener('click', () => {
             if (gameOver) return;
 
-            // Reveal dealer's hidden card
+            // Reveal dealer's hidden card and update score
+            dealerHand[1] = drawCard(); // Reveal dealer's hidden card
             renderCards(dealerHand, false);
             updateScore(dealerHand, false);
 
@@ -386,7 +386,7 @@
                 // Randomly assign direction and distance
                 const angle = Math.random() * 360;
                 const distance = Math.random() * 500 + 300;
-                const duration = 3; // Confetti duration is fixed at 3s
+                const duration = Math.random() * 1 + 1; // Confetti duration between 1s and 2s
 
                 const transform = `translate(-50%, -50%) rotate(${angle}deg) translate(${distance}px)`;
                 confetti.style.animationDuration = `${duration}s`;
