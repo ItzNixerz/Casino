@@ -86,6 +86,14 @@
             width: 200px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .game-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
         }
 
         .game-card img {
@@ -141,24 +149,26 @@
     <div class="main-content">
         <h2>Featured Games</h2>
         <div class="game-list">
-            <div class="game-card">
-                <!-- Updated image for Blackjack -->
+            <!-- Blackjack Game Card (Clickable) -->
+            <a href="/Casino/Games/blackjack.html" class="game-card">
                 <img src="https://th.bing.com/th/id/OIP.o0LL2N_5oi0m6xXVa2dM8QHaEl?w=270&h=180&c=7&r=0&o=5&pid=1.7" alt="Blackjack">
                 <h3>Blackjack</h3>
                 <p>Play the classic casino card game of Blackjack and try your luck!</p>
-            </div>
-            <div class="game-card">
-                <!-- Updated image for Poker -->
+            </a>
+
+            <!-- Poker Game Card (Clickable) -->
+            <a href="poker.html" class="game-card">
                 <img src="https://th.bing.com/th?q=Poker+Champions+Game&w=120&h=120&c=1&rs=1&qlt=90&cb=1&pid=InlineBlock&mkt=en-US&cc=US&setlang=en&adlt=moderate&t=1&mw=247" alt="Poker">
                 <h3>Poker</h3>
                 <p>Test your strategy with our exciting Poker tables and win big!</p>
-            </div>
-            <div class="game-card">
-                <!-- Updated image for Plinko -->
+            </a>
+
+            <!-- Plinko Game Card (Clickable) -->
+            <a href="plinko.html" class="game-card">
                 <img src="https://th.bing.com/th/id/OIP.S9XZXz_maeIBcEhMNxeFDAHaEK?w=314&h=180&c=7&r=0&o=5&pid=1.7" alt="Plinko">
                 <h3>Plinko</h3>
                 <p>Drop the ball and watch it bounce through the slots for huge rewards!</p>
-            </div>
+            </a>
         </div>
     </div>
 
