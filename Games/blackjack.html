@@ -240,10 +240,17 @@
             const cardDeck = isPlayer ? document.getElementById('player-cards') : document.getElementById('dealer-cards');
             cardDeck.innerHTML = '';  // Clear previous cards
 
-            hand.forEach(card => {
+            hand.forEach((card, index) => {
                 const cardElement = document.createElement('div');
                 cardElement.classList.add('card');
-                cardElement.innerHTML = `<img src="${cardImages[card.slice(0, -1)]}" alt="${card}" style="width:80px;height:120px;">`;
+
+                // Show the second card as a placeholder if it's the dealer's hidden card
+                if (isPlayer || index === 0 || !gameOver) {
+                    cardElement.innerHTML = `<img src="${cardImages[card.slice(0, -1)]}" alt="${card}" style="width:80px;height:120px;">`;
+                } else {
+                    cardElement.innerHTML = `<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Back_of_English_playing_cards.svg/1024px-Back_of_English_playing_cards.svg.png" alt="Hidden" style="width:80px;height:120px;">`;
+                }
+
                 cardDeck.appendChild(cardElement);
             });
         }
@@ -287,6 +294,10 @@
         // Stand button logic
         document.getElementById('stand-button').addEventListener('click', () => {
             if (gameOver) return;
+
+            // Reveal dealer's hidden card
+            renderCards(dealerHand, false);
+            updateScore(dealerHand, false);
 
             while (dealerScore < 17) {
                 dealerHand.push(drawCard());
