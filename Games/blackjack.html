@@ -30,8 +30,6 @@
         .card {
             width: 80px;
             height: 120px;
-            background-color: #34495e;
-            border-radius: 8px;
             margin: 10px;
             display: inline-block;
             text-align: center;
@@ -77,10 +75,6 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-        }
-
-        .hidden {
-            background-color: #34495e;
         }
 
         /* Countdown Pop-up - Centered Box */
@@ -365,47 +359,44 @@
             let countdownValue = 3;
             countdownText.textContent = countdownValue;
 
-            const interval = setInterval(() => {
+            const interval = setInterval(function() {
                 countdownValue--;
                 countdownText.textContent = countdownValue;
-                if (countdownValue <= 0) {
+                if (countdownValue === 0) {
                     clearInterval(interval);
-                    popup.style.display = 'none';
-                    startNewGame();
+                    setTimeout(function() {
+                        popup.style.display = 'none';
+                        startNewGame(); // Automatically start new game after countdown
+                    }, 1000);
                 }
             }, 1000);
         }
 
-        // Countdown function with pop-up
+        // Countdown function to show pop-up
         function countdown(seconds) {
-            const popup = document.getElementById('popup');
-            const countdownDisplay = document.getElementById('countdown');
-            const countdownText = document.getElementById('countdown-text');
-            popup.style.display = 'block';
-
             let countdownValue = seconds;
-            countdownDisplay.textContent = countdownValue;
+            const countdownText = document.getElementById('countdown-text');
             countdownText.textContent = countdownValue;
 
-            const interval = setInterval(() => {
+            const interval = setInterval(function() {
                 countdownValue--;
-                countdownDisplay.textContent = countdownValue;
                 countdownText.textContent = countdownValue;
-
-                if (countdownValue <= 0) {
+                if (countdownValue === 0) {
                     clearInterval(interval);
-                    popup.style.display = 'none';
-                    startNewGame();
+                    setTimeout(function() {
+                        popup.style.display = 'none';
+                        startNewGame(); // Automatically start new game after countdown
+                    }, 1000);
                 }
             }, 1000);
         }
-
-        // Event listeners for buttons
-        document.getElementById('hit-button').addEventListener('click', hit);
-        document.getElementById('stand-button').addEventListener('click', stand);
 
         // Initialize the game when the page loads
         window.onload = startNewGame;
+
+        // Add event listeners to buttons
+        document.getElementById('hit-button').addEventListener('click', hit);
+        document.getElementById('stand-button').addEventListener('click', stand);
     </script>
 
 </body>
