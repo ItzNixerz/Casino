@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -242,79 +241,53 @@
             cardDeck.innerHTML = '';  // Clear previous cards
 
             hand.forEach(card => {
-                const cardDiv = document.createElement('div');
-                cardDiv.classList.add('card');
-                const cardValue = card.slice(0, -1); // Get the card value (e.g., 'A', '10', 'K')
-                const cardImage = cardImages[cardValue]; // Get the card image URL
-                const img = document.createElement('img');
-                img.src = cardImage;
-                img.alt = card;
-                img.style.width = '60px';  // Set image width
-                img.style.height = '90px';  // Set image height
-                cardDiv.appendChild(img);
-                cardDeck.appendChild(cardDiv);
+                const cardElement = document.createElement('div');
+                cardElement.classList.add('card');
+                cardElement.innerHTML = `<img src="${cardImages[card.slice(0, -1)]}" alt="${card}" style="width:80px;height:120px;">`;
+                cardDeck.appendChild(cardElement);
             });
         }
 
-        // Start a new game
-        function startNewGame() {
+        // Start the game
+        function startGame() {
             gameOver = false;
-            playerScore = 0;
-            dealerScore = 0;
-            playerHand = [];
-            dealerHand = [];
-
             createDeck();
-            dealInitialCards();
+            playerHand = [drawCard(), drawCard()];
+            dealerHand = [drawCard(), drawCard()];
 
-            document.getElementById('game-status').textContent = '';
-            document.getElementById('hit-button').disabled = false;
-            document.getElementById('stand-button').disabled = false;
-        }
-
-        // Deal initial cards to player and dealer
-        function dealInitialCards() {
-            playerHand.push(drawCard(), drawCard());
-            dealerHand.push(drawCard(), drawCard());
-
+            // Initial render of cards
             renderCards(playerHand, true);
             renderCards(dealerHand, false);
-
             updateScore(playerHand, true);
             updateScore(dealerHand, false);
+            document.getElementById('game-status').textContent = 'Game in Progress...';
+
+            // Hide popup
+            document.getElementById('popup').style.display = 'none';
         }
 
-        // Handle the "Hit" button click
-        function hit() {
+        // Hit button logic
+        document.getElementById('hit-button').addEventListener('click', () => {
             if (gameOver) return;
 
             playerHand.push(drawCard());
             renderCards(playerHand, true);
             updateScore(playerHand, true);
 
-            // If player reaches 21, automatically end the game
-            if (playerScore === 21) {
+            if (playerScore > 21) {
+                document.getElementById('game-status').textContent = 'You busted! Dealer wins.';
                 gameOver = true;
-                winner = 'Player';  // Player wins
-                document.getElementById('game-status').textContent = 'Blackjack! You Win!';
-                endGame();
-            } else if (playerScore > 21) {
-                gameOver = true;
-                winner = 'Dealer';  // Dealer wins if player busts
-                document.getElementById('game-status').textContent = 'You Bust! Dealer Wins!';
-                endGame();
+                winner = 'Dealer';
+                setTimeout(() => {
+                    showPopup(); // Show countdown popup
+                }, 1000);
             }
-        }
+        });
 
-        // Handle the "Stand" button click
-        function stand() {
+        // Stand button logic
+        document.getElementById('stand-button').addEventListener('click', () => {
             if (gameOver) return;
 
-            // Reveal dealer's hidden card
-            renderCards(dealerHand, false);
-            updateScore(dealerHand, false);
-
-            // Dealer's turn to play
             while (dealerScore < 17) {
                 dealerHand.push(drawCard());
                 renderCards(dealerHand, false);
@@ -322,82 +295,50 @@
             }
 
             if (dealerScore > 21) {
-                winner = 'Player';  // Player wins if dealer busts
-                document.getElementById('game-status').textContent = 'Dealer Busts! You Win!';
+                document.getElementById('game-status').textContent = 'Dealer busted! You win!';
+                gameOver = true;
+                winner = 'Player';
             } else if (playerScore > dealerScore) {
-                winner = 'Player';  // Player wins if player score is higher than dealer
-                document.getElementById('game-status').textContent = 'You Win!';
+                document.getElementById('game-status').textContent = 'You win!';
+                gameOver = true;
+                winner = 'Player';
             } else if (playerScore < dealerScore) {
-                winner = 'Dealer';  // Dealer wins if dealer score is higher
-                document.getElementById('game-status').textContent = 'Dealer Wins!';
+                document.getElementById('game-status').textContent = 'Dealer wins!';
+                gameOver = true;
+                winner = 'Dealer';
             } else {
-                winner = 'None';  // It's a draw
-                document.getElementById('game-status').textContent = 'It\'s a Draw!';
+                document.getElementById('game-status').textContent = 'It\'s a tie!';
+                gameOver = true;
+                winner = 'Tie';
             }
 
-            gameOver = true;
-            endGame();
-        }
+            setTimeout(() => {
+                showPopup(); // Show countdown popup
+            }, 1000);
+        });
 
-        // Function to end the game, show popup with winner and start new game after countdown
-        function endGame() {
-            document.getElementById('hit-button').disabled = true;
-            document.getElementById('stand-button').disabled = true;
-            showWinnerPopup();
-            countdown(3);  // Start countdown from 3 seconds
-        }
+        // Countdown and pop-up message function
+        function showPopup() {
+            const popup = document.getElementById('popup');
+            const countdownElement = document.getElementById('countdown');
+            let countdown = 3;
 
-        // Show winner in the pop-up
-        function showWinnerPopup() {
-            const popupMessage = document.getElementById('popup-message');
-            const countdownText = document.getElementById('countdown-text');
-            const winnerMessage = winner === 'None' ? 'It\'s a Draw!' : `${winner} Wins!`;
-
-            popupMessage.textContent = winnerMessage + ' New Match Automatically Starting in 3...';
-            popupMessage.style.fontSize = '24px';
             popup.style.display = 'flex';
+            const countdownInterval = setInterval(() => {
+                countdown--;
+                countdownElement.textContent = countdown;
 
-            let countdownValue = 3;
-            countdownText.textContent = countdownValue;
-
-            const interval = setInterval(function() {
-                countdownValue--;
-                countdownText.textContent = countdownValue;
-                if (countdownValue === 0) {
-                    clearInterval(interval);
-                    setTimeout(function() {
-                        popup.style.display = 'none';
-                        startNewGame(); // Automatically start new game after countdown
-                    }, 1000);
+                if (countdown <= 0) {
+                    clearInterval(countdownInterval);
+                    popup.style.display = 'none';
+                    startGame();
                 }
             }, 1000);
         }
 
-        // Countdown function to show pop-up
-        function countdown(seconds) {
-            let countdownValue = seconds;
-            const countdownText = document.getElementById('countdown-text');
-            countdownText.textContent = countdownValue;
-
-            const interval = setInterval(function() {
-                countdownValue--;
-                countdownText.textContent = countdownValue;
-                if (countdownValue === 0) {
-                    clearInterval(interval);
-                    setTimeout(function() {
-                        popup.style.display = 'none';
-                        startNewGame(); // Automatically start new game after countdown
-                    }, 1000);
-                }
-            }, 1000);
-        }
-
-        // Initialize the game when the page loads
-        window.onload = startNewGame;
-
-        // Add event listeners to buttons
-        document.getElementById('hit-button').addEventListener('click', hit);
-        document.getElementById('stand-button').addEventListener('click', stand);
+        // Start the first game
+        startGame();
     </script>
+
 </body>
 </html>
