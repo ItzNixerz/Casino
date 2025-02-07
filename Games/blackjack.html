@@ -1,1 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Blackjack - ItzNixer'z Casino</title>
+    <style>
+        /* Basic styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #2c3e50;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            color: cyan;
+        }
+
+        .game-container {
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 30px;
+        }
+
+        .card {
+            width: 80px;
+            height: 120px;
+            background-color: #34495e;
+            border-radius: 8px;
+            margin: 10px;
+            display: inline-block;
+            text-align: center;
+            line-height: 120px;
+            font-size: 24px;
+            color: #fff;
+        }
+
+        .buttons {
+            margin-top: 20px;
+        }
+
+        button {
+            background-color: #16a085;
+            color: white;
+            padding: 10px 20px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        button:hover {
+            background-color: #1abc9c;
+        }
+
+        .status {
+            margin-top: 20px;
+            font-size: 20px;
+        }
+
+        .player, .dealer {
+            margin-top: 20px;
+        }
+
+        .score {
+            margin-top: 10px;
+            font-size: 24px;
+        }
+
+        .card-deck {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .hidden {
+            background-color: #34495e;
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>ItzNixer'z Casino - Blackjack</h1>
+
+    <div class="game-container">
+        <!-- Player Hand -->
+        <div class="player">
+            <h2>Your Hand</h2>
+            <div class="card-deck" id="player-cards">
+                <!-- Player's cards will appear here -->
+            </div>
+            <div class="score" id="player-score">Score: 0</div>
+        </div>
+
+        <!-- Dealer Hand -->
+        <div class="dealer">
+            <h2>Dealer's Hand</h2>
+            <div class="card-deck" id="dealer-cards">
+                <!-- Dealer's cards will appear here -->
+            </div>
+            <div class="score" id="dealer-score">Score: 0</div>
+        </div>
+
+        <!-- Game Controls -->
+        <div class="buttons">
+            <button id="hit-button">Hit</button>
+            <button id="stand-button">Stand</button>
+            <button id="new-game-button">New Game</button>
+        </div>
+
+        <!-- Game Status -->
+        <div class="status" id="game-status"></div>
+    </div>
+
+    <script>
+        const cardValues = {
+            '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10,
+            'J': 10, 'Q': 10, 'K': 10, 'A': 11
+        };
+
+        let deck = [];
+        let playerHand = [];
+        let dealerHand = [];
+        let playerScore = 0;
+        let dealerScore = 0;
+        let gameOver = false;
+
+        // Function to create and shuffle the deck
+        function createDeck() {
+            const suits = ['♠', '♥', '♦', '♣'];
+            const values = Object.keys(cardValues);
+
+            deck = [];
+
+            suits.forEach(suit => {
+                values.forEach(value => {
+                    deck.push(value + suit);
+                });
+            });
+
+            deck = shuffleDeck(deck);
+        }
+
+        // Shuffle deck function
+        function shuffleDeck(deck) {
+            for (let i = deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]];
+            }
+            return deck;
+        }
+
+        // Draw a card from the deck
+        function drawCard() {
+            return deck.pop();
+        }
+
+        // Update score for player or dealer
+        function updateScore(hand, isPlayer) {
+            let score = 0;
+            let aceCount = 0;
+
+            hand.forEach(card => {
+                const cardValue = card.slice(0, -1); // Remove suit to get the value
+                score += cardValues[cardValue];
+                if (cardValue === 'A') aceCount++;
+            });
+
+            // Adjust score for Aces
+            while (score > 21 && aceCount > 0) {
+                score -= 10;
+                aceCount--;
+            }
+
+            if (isPlayer) {
+                playerScore = score;
+                document.getElementById('player-score').textContent = `Score: ${playerScore}`;
+            } else {
+                dealerScore = score;
+                document.getElementById('dealer-score').textContent = `Score: ${dealerScore}`;
+            }
+        }
+
+        // Render cards in the player's or dealer's hand
+        function renderCards(hand, isPlayer) {
+            const cardDeck = isPlayer ? document.getElementById('player-cards') : document.getElementById('dealer-cards');
+            cardDeck.innerHTML = '';
+            hand.forEach(card => {
+                const cardDiv = document.createElement('div');
+                cardDiv.classList.add('card');
+                cardDiv.textContent = card.slice(0, -1); // Show card value without suit
+                cardDeck.appendChild(cardDiv);
+            });
+        }
+
+        // Start a new game
+        function startNewGame() {
+            gameOver = false;
+            playerScore = 0;
+            dealerScore = 0;
+            playerHand = [];
+            dealerHand = [];
+
+            createDeck();
+            dealInitialCards();
+
+            document.getElementById('game-status').textContent = '';
+            document.getElementById('hit-button').disabled = false;
+            document.getElementById('stand-button').disabled = false;
+        }
+
+        // Deal initial cards to player and dealer
+        function dealInitialCards() {
+            playerHand.push(drawCard(), drawCard());
+            dealerHand.push(drawCard(), drawCard());
+
+            renderCards(playerHand, true);
+            renderCards(dealerHand, false);
+
+            updateScore(playerHand, true);
+            updateScore(dealerHand, false);
+        }
+
+        // Handle the "Hit" button click
+        function hit() {
+            if (gameOver) return;
+
+            playerHand.push(drawCard());
+            renderCards(playerHand, true);
+            updateScore(playerHand, true);
+
+            if (playerScore > 21) {
+                gameOver = true;
+                document.getElementById('game-status').textContent = 'You Bust! Dealer Wins!';
+                document.getElementById('hit-button').disabled = true;
+                document.getElementById('stand-button').disabled = true;
+            }
+        }
+
+        // Handle the "Stand" button click
+        function stand() {
+            if (gameOver) return;
+
+            // Reveal dealer's hidden card
+            renderCards(dealerHand, false);
+            updateScore(dealerHand, false);
+
+            // Dealer's turn to play
+            while (dealerScore < 17) {
+                dealerHand.push(drawCard());
+                renderCards(dealerHand, false);
+                updateScore(dealerHand, false);
+            }
+
+            if (dealerScore > 21) {
+                document.getElementById('game-status').textContent = 'Dealer Busts! You Win!';
+            } else if (playerScore > dealerScore) {
+                document.getElementById('game-status').textContent = 'You Win!';
+            } else if (playerScore < dealerScore) {
+                document.getElementById('game-status').textContent = 'Dealer Wins!';
+            } else {
+                document.getElementById('game-status').textContent = 'It\'s a Draw!';
+            }
+
+            gameOver = true;
+            document.getElementById('hit-button').disabled = true;
+            document.getElementById('stand-button').disabled = true;
+        }
+
+        // Event listeners for buttons
+        document.getElementById('hit-button').addEventListener('click', hit);
+        document.getElementById('stand-button').addEventListener('click', stand);
+        document.getElementById('new-game-button').addEventListener('click', startNewGame);
+
+        // Initialize the game when the page loads
+        window.onload = startNewGame;
+    </script>
+
+</body>
+</html>
 
