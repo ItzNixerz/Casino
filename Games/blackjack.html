@@ -237,10 +237,10 @@
             }
         }
 
-        // Render cards in the player's or dealer's hand with images
+        // Render cards for player or dealer
         function renderCards(hand, isPlayer) {
             const cardDeck = isPlayer ? document.getElementById('player-cards') : document.getElementById('dealer-cards');
-            cardDeck.innerHTML = '';  // Clear previous cards
+            cardDeck.innerHTML = '';
 
             hand.forEach((card, index) => {
                 const cardElement = document.createElement('div');
