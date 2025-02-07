@@ -87,7 +87,7 @@
             background-color: rgba(0, 0, 0, 0.9);
             color: white;
             font-size: 20px;
-            width: 300px;
+            width: 350px;
             height: 250px;
             border-radius: 10px;
             padding: 20px;
@@ -101,6 +101,18 @@
         #winner-message {
             font-size: 24px;
             margin-bottom: 20px;
+        }
+
+        /* Style for the buttons in the pop-up to be side by side */
+        .game-options-buttons {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .game-options-buttons button {
+            width: 30%; /* Make all buttons equal width */
+            padding: 10px 0; /* Adjust vertical padding for consistency */
         }
     </style>
 </head>
@@ -139,9 +151,11 @@
         <!-- New Game Options in a Pop-up -->
         <div class="game-options" id="game-options">
             <div id="winner-message"></div>
-            <button id="play-again">Play Again</button>
-            <button id="return-to-games">Return to Games</button>
-            <button id="return-to-home">Return to Home Page</button>
+            <div class="game-options-buttons">
+                <button id="play-again">Play Again</button>
+                <button id="return-to-games">Return to Games</button>
+                <button id="return-to-home">Return to Home Page</button>
+            </div>
         </div>
     </div>
 
