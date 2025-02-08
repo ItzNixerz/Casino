@@ -268,7 +268,7 @@
                 if (cardValue === 'A') aceCount++;
             });
 
-            // Adjust score for Aces
+            // Adjust for aces if score goes over 21
             while (score > 21 && aceCount > 0) {
                 score -= 10;
                 aceCount--;
@@ -283,145 +283,125 @@
             }
         }
 
-        // Render cards for player or dealer
-        function renderCards(hand, isPlayer) {
-            const cardDeck = isPlayer ? document.getElementById('player-cards') : document.getElementById('dealer-cards');
-            cardDeck.innerHTML = '';
-
-            hand.forEach((card, index) => {
+        // Display cards for player or dealer
+        function displayCards(hand, isPlayer) {
+            const cardsContainer = isPlayer ? document.getElementById('player-cards') : document.getElementById('dealer-cards');
+            cardsContainer.innerHTML = ''; // Clear existing cards
+            hand.forEach(card => {
                 const cardElement = document.createElement('div');
                 cardElement.classList.add('card');
-                const cardValue = card.slice(0, -1);
-
-                // Show the card value
-                const cardImageElement = new Image();
-                cardImageElement.src = isPlayer || index > 0 ? cardImages[card] : cardBackImage;  // Show card back if it's the dealer's first card
-                cardElement.appendChild(cardImageElement);
-
-                cardDeck.appendChild(cardElement);
+                cardElement.innerHTML = `<img src="${cardImages[card] || cardBackImage}" alt="${card}">`;
+                cardsContainer.appendChild(cardElement);
             });
         }
 
-        // Start new game
-        function startGame() {
-            createDeck();
-            playerHand = [drawCard(), drawCard()];
-            dealerHand = [drawCard(), drawCard()]; // Dealer starts with a hidden card
-            playerScore = 0;
-            dealerScore = 0;
+        // Start a new game
+        function startNewGame() {
+            playerHand = [];
+            dealerHand = [];
             gameOver = false;
             winner = '';
-            document.getElementById('game-status').textContent = '';
 
-            updateScore(playerHand, true);
-            updateScore(dealerHand.slice(1), false); // Only update dealer score for the second card
-            renderCards(playerHand, true);
-            renderCards(dealerHand, false); // Render only the revealed card for dealer
+            createDeck();
+            playerScore = 0;
+            dealerScore = 0;
 
-            // Hide new game options pop-up
-            document.getElementById('game-options').style.display = 'none';
-        }
-
-        // Hit button logic
-        document.getElementById('hit-button').addEventListener('click', () => {
-            if (gameOver) return;
-
-            playerHand.push(drawCard());
-            renderCards(playerHand, true);
-            updateScore(playerHand, true);
-
-            if (playerScore > 21) {
-                document.getElementById('game-status').textContent = 'You busted! Dealer wins!';
-                gameOver = true;
-                winner = 'Dealer';
-                showGameOptions();
-            }
-        });
-
-        // Stand button logic
-        document.getElementById('stand-button').addEventListener('click', () => {
-            if (gameOver) return;
-
-            // Reveal dealer's hidden card and update score
-            dealerHand[0] = dealerHand[0]; // Reveal dealer's hidden card
-            renderCards(dealerHand, false);
-            updateScore(dealerHand, false);
-
-            // Dealer draws cards until their score is 17 or more
-            while (dealerScore < 17) {
+            for (let i = 0; i < 2; i++) {
+                playerHand.push(drawCard());
                 dealerHand.push(drawCard());
-                renderCards(dealerHand, false);
-                updateScore(dealerHand, false);
             }
 
-            // Determine winner
-            if (dealerScore > 21) {
-                document.getElementById('game-status').textContent = 'Dealer busted! You win!';
-                gameOver = true;
-                winner = 'Player';
-            } else if (playerScore > dealerScore) {
-                document.getElementById('game-status').textContent = 'You win!';
-                gameOver = true;
-                winner = 'Player';
-            } else if (playerScore < dealerScore) {
-                document.getElementById('game-status').textContent = 'Dealer wins!';
-                gameOver = true;
-                winner = 'Dealer';
-            } else {
-                document.getElementById('game-status').textContent = 'It\'s a tie!';
-                gameOver = true;
-                winner = 'Tie';
-            }
-
-            showGameOptions();
-        });
-
-        // Show new game options pop-up
-        function showGameOptions() {
-            const winnerMessage = document.getElementById('winner-message');
-            winnerMessage.textContent = winner === 'Tie' ? 'It\'s a tie! Play again?' : `${winner} wins! Play again?`;
-
-            // Show celebration sound and confetti
-            if (winner === 'Player') {
-                document.getElementById('celebration-sound').play();
-                showConfetti();
-            }
-
-            // Show the options pop-up
-            document.getElementById('game-options').style.display = 'block';
+            updateScore(playerHand, true);
+            updateScore(dealerHand, false);
+            displayCards(playerHand, true);
+            displayCards(dealerHand, false);
+            document.getElementById('game-status').textContent = '';
         }
 
-        // Confetti effect
-        function showConfetti() {
-            const container = document.getElementById('confetti-container');
+        // End the game and determine the winner
+        function endGame() {
+            gameOver = true;
+            if (playerScore > 21) {
+                winner = 'Dealer';
+            } else if (dealerScore > 21) {
+                winner = 'Player';
+            } else if (playerScore === dealerScore) {
+                winner = 'Tie';
+            } else if (playerScore > dealerScore) {
+                winner = 'Player';
+            } else {
+                winner = 'Dealer';
+            }
 
+            document.getElementById('game-status').textContent = `Game Over! ${winner} wins!`;
+
+            // Show pop-up options
+            document.getElementById('game-options').style.display = 'flex';
+
+            // Celebrate win if player won
+            if (winner === 'Player') {
+                const celebrationSound = document.getElementById('celebration-sound');
+                celebrationSound.play();
+                createConfetti();
+            }
+        }
+
+        // Create confetti effect
+        function createConfetti() {
+            const confettiContainer = document.getElementById('confetti-container');
             for (let i = 0; i < 100; i++) {
                 const confetti = document.createElement('div');
                 confetti.classList.add('confetti');
                 confetti.textContent = '🎉';
-                confetti.style.left = Math.random() * 100 + '%';
-                confetti.style.animationDelay = Math.random() * 2 + 's';
-                container.appendChild(confetti);
+                confetti.style.left = `${Math.random() * 100}%`;
+                confetti.style.animationDuration = `${Math.random() * 3 + 2}s`;
+                confettiContainer.appendChild(confetti);
             }
         }
 
-        // Play again button logic
-        document.getElementById('play-again').addEventListener('click', startGame);
+        // Handle card actions
+        document.getElementById('hit-button').addEventListener('click', () => {
+            if (gameOver) return;
 
-        // Event listeners for game options
+            playerHand.push(drawCard());
+            updateScore(playerHand, true);
+            displayCards(playerHand, true);
+
+            if (playerScore > 21) {
+                endGame();
+            }
+        });
+
+        document.getElementById('stand-button').addEventListener('click', () => {
+            if (gameOver) return;
+
+            while (dealerScore < 17) {
+                dealerHand.push(drawCard());
+                updateScore(dealerHand, false);
+                displayCards(dealerHand, false);
+            }
+
+            endGame();
+        });
+
+        // Restart the game
+        document.getElementById('play-again').addEventListener('click', () => {
+            document.getElementById('game-options').style.display = 'none';
+            startNewGame();
+        });
+
+        // Return to main games page (just an example)
         document.getElementById('return-to-games').addEventListener('click', () => {
-            alert('Returning to games selection...');
-            // Redirect to games selection page (can be customized)
+            window.location.href = '/games'; // Redirect to games page
         });
 
+        // Return to home page
         document.getElementById('return-to-home').addEventListener('click', () => {
-            alert('Returning to home page...');
-            // Redirect to home page (can be customized)
+            window.location.href = '/'; // Redirect to home page
         });
 
-        // Start the first game when the page loads
-        startGame();
+        // Start a new game when the page loads
+        startNewGame();
     </script>
-
 </body>
 </html>
