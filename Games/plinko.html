@@ -19,53 +19,37 @@
             background-color: #1e1e1e; /* Same as Blackjack background */
             color: #fff;
             text-align: center;
+            display: flex;
+            justify-content: space-between;
+            min-height: 100vh;
         }
 
-        /* Header styles */
-        header {
+        /* Sidebar (Chat) */
+        #chat {
+            width: 250px;
+            height: 100%;
             background-color: #333;
+            color: white;
             padding: 20px;
+            overflow-y: auto;
+            border-radius: 10px;
+            margin-right: 30px;
         }
 
-        header h1 {
-            color: cyan;
-            font-size: 3rem;
-            letter-spacing: 2px;
-        }
-
-        /* Row Selection Dropdown */
-        #row-selection {
-            margin: 20px;
-            padding: 10px;
-            font-size: 16px;
-            background-color: #333;
-            color: #fff;
-            cursor: pointer;
-            border: none;
-            border-radius: 5px;
-        }
-
-        /* Row options dropdown */
-        #row-options {
-            list-style: none;
-            padding: 0;
-            display: none;
-            position: absolute;
-            background-color: #333;
-            color: #fff;
-            border-radius: 5px;
-            margin-top: 10px;
-            width: 120px;
+        #chat h3 {
             text-align: center;
         }
 
-        #row-options li {
-            padding: 10px;
-            cursor: pointer;
+        #chat ul {
+            list-style-type: none;
+            padding-left: 0;
         }
 
-        #row-options li:hover {
-            background-color: #ff5722;
+        #chat li {
+            margin-bottom: 10px;
+            padding: 5px;
+            background-color: #444;
+            border-radius: 5px;
         }
 
         /* Game Board */
@@ -113,83 +97,45 @@
             align-items: center;
         }
 
-        /* Footer */
-        footer {
+        /* Button */
+        #spawn-ball-btn {
+            padding: 10px;
             background-color: #333;
             color: #fff;
-            text-align: center;
-            padding: 20px;
-            position: fixed;
-            width: 100%;
-            bottom: 0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
 
-    <!-- Header Section -->
-    <header>
-        <h1>Plinko Game</h1>
-    </header>
-
-    <!-- Row Selection Dropdown -->
-    <button id="row-selection">Select Number of Rows</button>
-    <ul id="row-options">
-        <!-- Options will be populated here -->
-    </ul>
+    <!-- Sidebar for Chat -->
+    <div id="chat">
+        <h3>Ball Landing Chat</h3>
+        <ul id="chat-list">
+            <!-- Landing information will be appended here -->
+        </ul>
+    </div>
 
     <!-- Game Board Section -->
     <div id="game-board"></div>
 
     <!-- Spawn Ball Button -->
-    <button id="spawn-ball-btn" style="padding: 10px; background-color: #333; color: #fff; border: none; border-radius: 5px; cursor: pointer;">Spawn Ball</button>
-
-    <!-- Footer Section -->
-    <footer>
-        <p>&copy; 2025 ItzNixer'z Casino - All rights reserved</p>
-    </footer>
+    <button id="spawn-ball-btn">Spawn Ball</button>
 
     <script>
         const board = document.getElementById("game-board");
-        const rowSelectionBtn = document.getElementById("row-selection");
-        const rowOptionsList = document.getElementById("row-options");
         const spawnBallBtn = document.getElementById("spawn-ball-btn");
+        const chatList = document.getElementById("chat-list");
         let rows = 5; // Default rows
         let bins = []; // Array to hold bins
-
-        // Function to generate the list of row options (5 to 16)
-        function generateRowOptions() {
-            for (let i = 5; i <= 16; i++) {
-                const li = document.createElement('li');
-                li.textContent = i;
-                li.addEventListener('click', () => {
-                    rows = i;
-                    updateBoardSize();
-                    createPegs(); // Regenerate pegs and bins based on new row count
-                    rowOptionsList.style.display = 'none'; // Hide the dropdown after selection
-                });
-                rowOptionsList.appendChild(li);
-            }
-        }
-
-        // Function to toggle the visibility of row options
-        rowSelectionBtn.addEventListener("click", () => {
-            rowOptionsList.style.display = rowOptionsList.style.display === 'block' ? 'none' : 'block';
-        });
-
-        // Function to update the board size dynamically
-        function updateBoardSize() {
-            // Width remains fixed, height stays constant
-            const width = 600;
-            board.style.width = `${width}px`;
-        }
+        const landingHistory = []; // Store landing history (max 20 entries)
 
         // Function to generate the pegs
         function createPegs() {
             board.innerHTML = ''; // Clear the board
-
-            // Update the size of the board
-            updateBoardSize();
 
             // Variables for the position of pegs
             const pegDistance = 40;
@@ -277,8 +223,10 @@
                 } else {
                     // Ball reaches the bottom
                     const binIndex = Math.floor((positionX - 10) / 40);
+
                     if (binIndex >= 0 && binIndex < bins.length) {
-                        bins[binIndex].style.backgroundColor = "#FF5722"; // Highlight the bin where the ball landed
+                        const multiplier = bins[binIndex].textContent;
+                        logBallLanding(multiplier);  // Log landing in chat
                     }
 
                     // Remove the ball after landing
@@ -291,14 +239,36 @@
             moveBall();
         }
 
+        // Log ball landing in the chat
+        function logBallLanding(multiplier) {
+            const landingMessage = `Ball landed in a bin with multiplier: ${multiplier}`;
+            if (landingHistory.length >= 20) {
+                landingHistory.shift(); // Remove the oldest if we have more than 20 entries
+            }
+
+            landingHistory.push(landingMessage);
+
+            // Update chat display
+            updateChat();
+        }
+
+        // Update the chat with the latest 20 landings
+        function updateChat() {
+            chatList.innerHTML = '';
+            landingHistory.forEach(landing => {
+                const li = document.createElement('li');
+                li.textContent = landing;
+                chatList.appendChild(li);
+            });
+        }
+
         // Add event listener to spawn ball button
         spawnBallBtn.addEventListener("click", dropBall);
 
-        // Generate the initial game board
+        // Initialize the game
         createPegs();
+        createBins();
 
-        // Initialize row options
-        generateRowOptions();
     </script>
 
 </body>
