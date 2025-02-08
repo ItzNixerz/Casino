@@ -71,8 +71,8 @@
         /* Game Board */
         #game-board {
             position: relative;
-            width: 80%; /* Default width */
-            height: 80vh; /* Default height */
+            width: 70%; /* Set the width to a fixed percentage */
+            height: 70vh; /* Set height to a fixed percentage */
             margin: 30px auto;
             background-color: #f0f0f0;
             border: 2px solid #000;
@@ -106,6 +106,11 @@
             border-radius: 10px;
             position: absolute;
             bottom: 0;
+            color: white;
+            font-size: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         /* Footer */
@@ -170,10 +175,9 @@
 
         // Function to update the board size dynamically
         function updateBoardSize() {
-            const width = Math.max(400, rows * 40); // Set minimum width based on number of rows
-            const height = rows * 60; // Set height proportional to the number of rows
-
-            // Set the width and height to fit the board nicely
+            // Width remains fixed, height will adjust based on the number of rows
+            const width = 600;
+            const height = 60 + (rows * 50); // Height is based on the number of rows
             board.style.width = `${width}px`;
             board.style.height = `${height}px`;
         }
@@ -204,19 +208,29 @@
             createBins(); // Create bins after pegs
         }
 
-        // Function to create bins based on rows
+        // Function to create bins at the bottom with multipliers
         function createBins() {
             bins = [];
             const width = board.offsetWidth;
             const binWidth = 40;
             const binHeight = 30;
 
-            for (let i = 0; i < rows + 1; i++) {
+            const totalBins = rows + 1;
+            const multiplierRange = [0.2, 1000]; // Min and Max multiplier
+            const binMultiplier = (multiplierRange[1] - multiplierRange[0]) / (totalBins - 1); // Multiplier increment per bin
+
+            // Create bins centered at the bottom of the board
+            for (let i = 0; i < totalBins; i++) {
                 const bin = document.createElement('div');
                 bin.classList.add('bin');
-                bin.style.left = `${(width - (binWidth * (rows + 1))) / 2 + (i * binWidth)}px`;
+                bin.style.left = `${(width - (binWidth * totalBins)) / 2 + (i * binWidth)}px`;
                 bin.style.width = `${binWidth}px`;
                 bin.style.height = `${binHeight}px`;
+
+                // Assign a multiplier to each bin
+                const multiplier = (multiplierRange[0] + i * binMultiplier).toFixed(2);
+                bin.textContent = `${multiplier}x`;
+
                 bins.push(bin);
                 board.appendChild(bin);
             }
