@@ -3,20 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Plinko Game</title>
     <style>
+        /* Reset default margin and padding */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body styles */
         body {
             font-family: Arial, sans-serif;
+            background-color: #1e1e1e; /* Same as Blackjack background */
+            color: #fff;
             text-align: center;
         }
+
+        /* Header styles */
+        header {
+            background-color: #333;
+            padding: 20px;
+        }
+
+        header h1 {
+            color: cyan;
+            font-size: 3rem;
+            letter-spacing: 2px;
+        }
+
+        /* Game Board */
         #game-board {
             position: relative;
-            width: 500px;
+            width: 400px;
             height: 600px;
-            border: 2px solid #000;
-            margin: 20px auto;
+            margin: 30px auto;
             background-color: #f0f0f0;
+            border: 2px solid #000;
+            border-radius: 10px;
+            overflow: hidden;
         }
+
+        /* Pegs */
         .peg {
             position: absolute;
             width: 10px;
@@ -24,14 +53,8 @@
             background-color: #333;
             border-radius: 50%;
         }
-        .bin {
-            width: 50px;
-            height: 30px;
-            margin-top: 10px;
-            background-color: #4CAF50;
-            border-radius: 10px;
-            display: inline-block;
-        }
+
+        /* Ball */
         .ball {
             position: absolute;
             width: 20px;
@@ -39,105 +62,158 @@
             background-color: #ff6347;
             border-radius: 50%;
         }
-        #spawn-btn {
+
+        /* Bins at the bottom */
+        .bin {
+            width: 40px;
+            height: 30px;
+            background-color: #4CAF50;
+            border-radius: 10px;
+            position: absolute;
+            bottom: 0;
+        }
+
+        /* Row Selection Button */
+        #row-btn {
+            margin: 20px;
             padding: 10px 20px;
             font-size: 16px;
-            margin-top: 20px;
             cursor: pointer;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
         }
     </style>
 </head>
 <body>
 
-<h1>Plinko Game</h1>
-<button id="spawn-btn">Spawn Ball</button>
-<div id="game-board">
-    <!-- Pegs will be dynamically added here -->
-</div>
-<div id="bins">
-    <div class="bin" id="bin1"></div>
-    <div class="bin" id="bin2"></div>
-    <div class="bin" id="bin3"></div>
-    <div class="bin" id="bin4"></div>
-    <div class="bin" id="bin5"></div>
-</div>
+    <!-- Header Section -->
+    <header>
+        <h1>Plinko Game</h1>
+    </header>
 
-<script>
-// Create Pegs
-const board = document.getElementById('game-board');
-const rows = 5;  // number of rows of pegs
-const cols = 9;  // number of columns of pegs
-const pegDistance = 50; // distance between pegs
+    <!-- Row Selection Button -->
+    <button id="row-btn">Select Number of Rows (5 to 16)</button>
 
-// Generate pegs on the board
-function createPegs() {
-    const pegOffsetX = pegDistance / 2; // to center pegs
-    const pegOffsetY = pegDistance;
-    
-    for (let y = 0; y < rows; y++) {
-        for (let x = 0; x < cols; x++) {
-            if (y % 2 === 0 && x % 2 === 0) {
-                const peg = document.createElement('div');
-                peg.classList.add('peg');
-                peg.style.top = `${y * pegOffsetY}px`;
-                peg.style.left = `${x * pegOffsetX}px`;
-                board.appendChild(peg);
-            } else if (y % 2 !== 0 && x % 2 !== 0) {
-                const peg = document.createElement('div');
-                peg.classList.add('peg');
-                peg.style.top = `${y * pegOffsetY}px`;
-                peg.style.left = `${x * pegOffsetX}px`;
-                board.appendChild(peg);
+    <!-- Game Board Section -->
+    <div id="game-board"></div>
+
+    <!-- Footer Section -->
+    <footer>
+        <p>&copy; 2025 ItzNixer'z Casino - All rights reserved</p>
+    </footer>
+
+    <script>
+        const board = document.getElementById("game-board");
+        const rowBtn = document.getElementById("row-btn");
+        let rows = 5; // Default rows
+        let bins = []; // Array to hold bins
+
+        // Function to generate the pegs
+        function createPegs() {
+            board.innerHTML = ''; // Clear the board
+
+            // Variables for the position of pegs
+            const pegDistance = 40;
+            const width = board.offsetWidth;
+            const height = board.offsetHeight;
+
+            // Pegs grid generation logic (narrow at the top and wide at the bottom)
+            for (let y = 0; y < rows; y++) {
+                let pegOffsetX = (width - pegDistance * (y + 1)) / 2; // make top narrow
+                for (let x = 0; x <= y; x++) {
+                    const peg = document.createElement('div');
+                    peg.classList.add('peg');
+                    peg.style.top = `${y * pegDistance}px`;
+                    peg.style.left = `${pegOffsetX + (x * pegDistance)}px`;
+                    board.appendChild(peg);
+                }
+            }
+            createBins(); // Create bins after pegs
+        }
+
+        // Function to create bins based on rows
+        function createBins() {
+            bins = [];
+            const width = board.offsetWidth;
+            const binWidth = 40;
+            const binHeight = 30;
+
+            for (let i = 0; i < rows + 1; i++) {
+                const bin = document.createElement('div');
+                bin.classList.add('bin');
+                bin.style.left = `${(width - (binWidth * (rows + 1))) / 2 + (i * binWidth)}px`;
+                bin.style.width = `${binWidth}px`;
+                bin.style.height = `${binHeight}px`;
+                bins.push(bin);
+                board.appendChild(bin);
             }
         }
-    }
-}
 
-// Ball drop function
-function spawnBall() {
-    const ball = document.createElement('div');
-    ball.classList.add('ball');
-    ball.style.left = '240px';  // initial horizontal position
-    ball.style.top = '0px';     // start at top
+        // Function to drop a ball
+        function dropBall() {
+            const ball = document.createElement('div');
+            ball.classList.add('ball');
+            ball.style.left = `${(board.offsetWidth - 20) / 2}px`;  // Ball starts at the center
+            ball.style.top = '0px';
 
-    board.appendChild(ball);
+            board.appendChild(ball);
 
-    let positionX = 240; // X-axis (center of the board)
-    let positionY = 0;   // Y-axis (top of the board)
-    let gravity = 2;     // speed of falling
+            let positionX = (board.offsetWidth - 20) / 2;  // Initial X
+            let positionY = 0;  // Initial Y (top)
+            let gravity = 2;  // Ball falling speed
 
-    function dropBall() {
-        if (positionY < 550) {
-            positionY += gravity; // make the ball fall down
-            ball.style.top = `${positionY}px`;
+            function moveBall() {
+                if (positionY < board.offsetHeight - 30) {
+                    positionY += gravity;
+                    ball.style.top = `${positionY}px`;
 
-            // Randomly change direction based on peg hit (simulate bouncing off pegs)
-            if (Math.random() < 0.1) { // 10% chance to change direction
-                positionX += Math.random() < 0.5 ? -20 : 20; // randomly shift left or right
+                    // Add random left or right movement to simulate bouncing off pegs
+                    if (Math.random() < 0.1) {
+                        positionX += Math.random() < 0.5 ? -20 : 20;
+                    }
+
+                    ball.style.left = `${positionX}px`;
+
+                    requestAnimationFrame(moveBall);
+                } else {
+                    // Ball reaches the bottom
+                    const binIndex = Math.floor((positionX - 10) / 40);
+                    if (binIndex >= 0 && binIndex < bins.length) {
+                        bins[binIndex].style.backgroundColor = "#FF5722"; // Highlight the bin where the ball landed
+                    }
+
+                    // Remove the ball after landing
+                    setTimeout(() => {
+                        ball.remove();
+                    }, 500);
+                }
             }
-            ball.style.left = `${positionX}px`;
 
-            // Continue falling
-            requestAnimationFrame(dropBall);
-        } else {
-            // The ball has landed, assign it to a bin
-            const binIndex = Math.floor((positionX - 50) / 90);
-            if (binIndex >= 0 && binIndex < 5) {
-                const bin = document.getElementById(`bin${binIndex + 1}`);
-                bin.style.backgroundColor = "#FF5722"; // change color to indicate the ball landed
-            }
+            moveBall();
         }
-    }
 
-    dropBall(); // Start dropping the ball
-}
+        // Function to change the number of rows
+        rowBtn.addEventListener("click", () => {
+            rows = prompt("Enter the number of rows (5 to 16)", rows);
+            rows = Math.max(5, Math.min(16, rows)); // Ensure the value is between 5 and 16
+            createPegs();  // Recreate pegs and bins with the new row count
+        });
 
-// Initialize Pegs on page load
-createPegs();
+        // Generate the initial game board
+        createPegs();
 
-// Spawn Ball Button functionality
-document.getElementById('spawn-btn').addEventListener('click', spawnBall);
-</script>
+        // Simulate ball drop when clicked anywhere on the board
+        board.addEventListener("click", dropBall);
+    </script>
 
 </body>
 </html>
