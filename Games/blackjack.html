@@ -199,8 +199,25 @@
     <div class="confetti-container" id="confetti-container"></div>
 
     <script>
-        const cardBackImage = 'https://th.bing.com/th/id/OIP.LUhy335_mJGIBNske747TgHaKZ?w=128&h=181&c=7&r=0&o=5&pid=1.7';  // Image for card back
-        const cardImage = 'https://example.com/card-image.png';  // Replace with your card image URL
+        // Card image URLs for the deck
+        const cardImages = {
+            '2♠': 'https://example.com/2_of_spades.png',
+            '3♠': 'https://example.com/3_of_spades.png',
+            '4♠': 'https://example.com/4_of_spades.png',
+            '5♠': 'https://example.com/5_of_spades.png',
+            '6♠': 'https://example.com/6_of_spades.png',
+            '7♠': 'https://example.com/7_of_spades.png',
+            '8♠': 'https://example.com/8_of_spades.png',
+            '9♠': 'https://example.com/9_of_spades.png',
+            '10♠': 'https://example.com/10_of_spades.png',
+            'J♠': 'https://example.com/jack_of_spades.png',
+            'Q♠': 'https://example.com/queen_of_spades.png',
+            'K♠': 'https://example.com/king_of_spades.png',
+            'A♠': 'https://example.com/ace_of_spades.png',
+            // Repeat for other suits (♥, ♦, ♣)
+        };
+
+        const cardBackImage = 'https://example.com/card-back.png'; // Image for card back
 
         let deck = [];
         let playerHand = [];
@@ -278,7 +295,7 @@
 
                 // Show the card value
                 const cardImageElement = new Image();
-                cardImageElement.src = isPlayer || index > 0 ? cardImage : cardBackImage;  // Show card back if it's the dealer's first card
+                cardImageElement.src = isPlayer || index > 0 ? cardImages[card] : cardBackImage;  // Show card back if it's the dealer's first card
                 cardElement.appendChild(cardImageElement);
 
                 cardDeck.appendChild(cardElement);
@@ -356,69 +373,55 @@
                 winner = 'Tie';
             }
 
-            // Show new game options in pop-up after a 5-second delay
-            setTimeout(showGameOptions, 5000);
+            showGameOptions();
         });
 
-        // Show game options in the pop-up and display winner
+        // Show new game options pop-up
         function showGameOptions() {
-            document.getElementById('winner-message').textContent = `Winner: ${winner}`;
-            document.getElementById('game-options').style.display = 'block';
+            const winnerMessage = document.getElementById('winner-message');
+            winnerMessage.textContent = winner === 'Tie' ? 'It\'s a tie! Play again?' : `${winner} wins! Play again?`;
 
-            // If the player wins, show confetti explosion
+            // Show celebration sound and confetti
             if (winner === 'Player') {
-                showConfettiExplosion();
-                playCelebrationSound();
+                document.getElementById('celebration-sound').play();
+                showConfetti();
             }
+
+            // Show the options pop-up
+            document.getElementById('game-options').style.display = 'block';
         }
 
-        // Generate confetti explosion effect
-        function showConfettiExplosion() {
-            const confettiContainer = document.getElementById('confetti-container');
-            const confettiEmoji = '🎉';
-            const numberOfConfetti = 100;
+        // Confetti effect
+        function showConfetti() {
+            const container = document.getElementById('confetti-container');
 
-            for (let i = 0; i < numberOfConfetti; i++) {
-                const confetti = document.createElement('span');
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
                 confetti.classList.add('confetti');
-                confetti.textContent = confettiEmoji;
-
-                // Randomly assign direction and distance
-                const angle = Math.random() * 360;
-                const distance = Math.random() * 500 + 300;
-                const duration = Math.random() * 1 + 1; // Confetti duration between 1s and 2s
-
-                const transform = `translate(-50%, -50%) rotate(${angle}deg) translate(${distance}px)`;
-                confetti.style.animationDuration = `${duration}s`;
-
-                confetti.style.transform = transform;
-                confettiContainer.appendChild(confetti);
+                confetti.textContent = '🎉';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                container.appendChild(confetti);
             }
-        }
-
-        // Play celebration sound
-        function playCelebrationSound() {
-            const sound = document.getElementById('celebration-sound');
-            sound.play();
         }
 
         // Play again button logic
-        document.getElementById('play-again').addEventListener('click', () => {
-            startGame();
-        });
+        document.getElementById('play-again').addEventListener('click', startGame);
 
-        // Return to Games button logic
+        // Event listeners for game options
         document.getElementById('return-to-games').addEventListener('click', () => {
-            window.location.href = 'games.html';  // Replace with actual games page URL
+            alert('Returning to games selection...');
+            // Redirect to games selection page (can be customized)
         });
 
-        // Return to Home Page button logic
         document.getElementById('return-to-home').addEventListener('click', () => {
-            window.location.href = 'index.html';  // Replace with actual homepage URL
+            alert('Returning to home page...');
+            // Redirect to home page (can be customized)
         });
 
-        // Start the first game
+        // Start the first game when the page loads
         startGame();
     </script>
+
 </body>
 </html>
