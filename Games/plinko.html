@@ -94,7 +94,7 @@
             position: absolute;
             width: 20px;
             height: 20px;
-            background-color: #ff6347;
+            background-color: red; /* Red Ball */
             border-radius: 50%;
         }
 
@@ -206,7 +206,7 @@
                     board.appendChild(peg);
                 }
             }
-            createBins(); // Create bins after pegs
+            createBins(); // Regenerate bins based on row count
         }
 
         // Function to create bins at the bottom with multipliers
@@ -217,10 +217,19 @@
             const binHeight = 30;
 
             const totalBins = rows + 1;
-            const multipliers = [0.2, 2, 5, 10, 25, 50, 100, 250, 500, 1000];
-            
-            // Randomly shuffle multipliers
-            multipliers.sort(() => Math.random() - 0.5);
+            let multipliers;
+
+            // Set multipliers for different row counts
+            if (rows === 5) {
+                // For 5 rows: 2x at the outer bins, 1x in the middle bins, and 0.2x in the center
+                multipliers = [2, 1, 1, 1, 0.2];
+            } else if (rows === 16) {
+                // For 16 rows: outer bins 1000x, 50x, 25x, 10x, 2x, 0.2x in the middle
+                multipliers = [1000, 50, 25, 10, 2, 0.2];
+            } else {
+                // Default multipliers for any other rows count (this could be expanded or adjusted as needed)
+                multipliers = Array(totalBins).fill(0.2); // Default all bins to 0.2x
+            }
 
             // Create bins centered at the bottom of the board
             for (let i = 0; i < totalBins; i++) {
@@ -231,7 +240,7 @@
                 bin.style.height = `${binHeight}px`;
 
                 // Assign a multiplier to each bin
-                const multiplier = multipliers[i % multipliers.length].toFixed(1);
+                const multiplier = multipliers[i % multipliers.length];
                 bin.textContent = `${multiplier}x`;
 
                 bins.push(bin);
