@@ -278,7 +278,7 @@
 
                 // Show the card value
                 const cardImageElement = new Image();
-                cardImageElement.src = isPlayer || index > 0 ? cardImage : cardBackImage;  // Show card back if it's the dealer's second card
+                cardImageElement.src = isPlayer || index > 0 ? cardImage : cardBackImage;  // Show card back if it's the dealer's first card
                 cardElement.appendChild(cardImageElement);
 
                 cardDeck.appendChild(cardElement);
@@ -297,7 +297,7 @@
             document.getElementById('game-status').textContent = '';
 
             updateScore(playerHand, true);
-            updateScore(dealerHand, false);
+            updateScore(dealerHand.slice(1), false); // Only update dealer score for the second card
             renderCards(playerHand, true);
             renderCards(dealerHand, false); // Render only the revealed card for dealer
 
@@ -326,7 +326,7 @@
             if (gameOver) return;
 
             // Reveal dealer's hidden card and update score
-            dealerHand[1] = drawCard(); // Reveal dealer's hidden card
+            dealerHand[0] = dealerHand[0]; // Reveal dealer's hidden card
             renderCards(dealerHand, false);
             updateScore(dealerHand, false);
 
@@ -356,8 +356,8 @@
                 winner = 'Tie';
             }
 
-            // Show new game options in pop-up
-            showGameOptions();
+            // Show new game options in pop-up after a 5-second delay
+            setTimeout(showGameOptions, 5000);
         });
 
         // Show game options in the pop-up and display winner
