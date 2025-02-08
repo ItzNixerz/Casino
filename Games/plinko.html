@@ -3,51 +3,190 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Plinko Game</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; background-color: #1e1e1e; color: #fff; text-align: center; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        header { background-color: #333; padding: 20px; width: 100%; }
-        header h1 { color: cyan; font-size: 3rem; letter-spacing: 2px; }
-        #row-selection { margin: 20px; padding: 10px; font-size: 16px; background-color: #333; color: #fff; cursor: pointer; border: none; border-radius: 5px; }
-        #row-options { list-style: none; padding: 0; display: none; position: absolute; background-color: #333; color: #fff; border-radius: 5px; width: 120px; }
-        #row-options li { padding: 10px; cursor: pointer; }
-        #row-options li:hover { background-color: #ff5722; }
-        #game-board { position: relative; width: 600px; height: 500px; margin: 30px auto; background-color: #f0f0f0; border: 2px solid #000; border-radius: 10px; overflow: hidden; }
-        .peg { position: absolute; width: 10px; height: 10px; background-color: #333; border-radius: 50%; }
-        .ball { position: absolute; width: 20px; height: 20px; background-color: red; border-radius: 50%; }
-        .bin { width: 40px; height: 30px; background-color: #4CAF50; border-radius: 10px; position: absolute; bottom: 0; color: white; font-size: 12px; display: flex; justify-content: center; align-items: center; }
-        #chat { width: 300px; height: 600px; background-color: #333; color: white; padding: 20px; overflow-y: auto; border-radius: 10px; position: fixed; bottom: 50px; left: calc(70% + 20px); top: 30px; }
-        #chat h3 { text-align: center; }
-        #chat ul { list-style-type: none; padding-left: 0; }
-        #chat li { margin-bottom: 10px; padding: 5px; background-color: #444; border-radius: 5px; }
-        footer { background-color: #333; color: #fff; text-align: center; padding: 20px; position: fixed; width: 100%; bottom: 0; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: #fff;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: #333;
+            padding: 20px;
+            width: 100%;
+            text-align: center;
+        }
+
+        header h1 {
+            color: cyan;
+            font-size: 3rem;
+            letter-spacing: 2px;
+        }
+
+        #row-selection {
+            margin: 20px;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #333;
+            color: #fff;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+
+        #row-options {
+            list-style: none;
+            padding: 5px;
+            display: none;
+            position: absolute;
+            background-color: #333;
+            color: #fff;
+            border-radius: 5px;
+            margin-top: 10px;
+            width: 150px;
+            text-align: center;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 10;
+        }
+
+        #row-options li {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        #row-options li:hover {
+            background-color: #ff5722;
+        }
+
+        #game-board {
+            position: relative;
+            width: 70%;
+            height: 500px;
+            margin: 30px auto;
+            background-color: #f0f0f0;
+            border: 2px solid #000;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .peg {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #333;
+            border-radius: 50%;
+        }
+
+        .ball {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: red;
+            border-radius: 50%;
+        }
+
+        .bin {
+            width: 40px;
+            height: 30px;
+            background-color: #4CAF50;
+            border-radius: 10px;
+            position: absolute;
+            bottom: 0;
+            color: white;
+            font-size: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #chat {
+            width: 300px;
+            height: 600px;
+            background-color: #333;
+            color: white;
+            padding: 20px;
+            overflow-y: auto;
+            border-radius: 10px;
+            position: fixed;
+            bottom: 50px;
+            left: calc(70% + 20px);
+            top: 30px;
+        }
+
+        #chat h3 {
+            text-align: center;
+        }
+
+        #chat ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        #chat li {
+            margin-bottom: 10px;
+            padding: 5px;
+            background-color: #444;
+            border-radius: 5px;
+        }
+
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
     </style>
 </head>
 <body>
-    <header><h1>Plinko Game</h1></header>
+    <header>
+        <h1>Plinko Game</h1>
+    </header>
+
     <button id="row-selection">Select Number of Rows</button>
     <ul id="row-options"></ul>
+
     <div id="game-board"></div>
-    <button id="spawn-ball-btn">Spawn Ball</button>
-    <footer><p>&copy; 2025 ItzNixer'z Casino - All rights reserved</p></footer>
-    <div id="chat"><h3>Ball Landing Chat</h3><ul id="chat-list"></ul></div>
+
+    <button id="spawn-ball-btn" style="padding: 10px; background-color: #333; color: #fff; border: none; border-radius: 5px; cursor: pointer;">Spawn Ball</button>
+
+    <footer>
+        <p>&copy; 2025 ItzNixer'z Casino - All rights reserved</p>
+    </footer>
+
+    <div id="chat">
+        <h3>Ball Landing Chat</h3>
+        <ul id="chat-list"></ul>
+    </div>
+
     <script>
-        const board = document.getElementById("game-board");
         const rowSelectionBtn = document.getElementById("row-selection");
         const rowOptionsList = document.getElementById("row-options");
-        const spawnBallBtn = document.getElementById("spawn-ball-btn");
-        const chatList = document.getElementById("chat-list");
-        let rows = 5;
-        let bins = [];
 
         function generateRowOptions() {
-            rowOptionsList.innerHTML = "";
+            rowOptionsList.innerHTML = '';
             for (let i = 5; i <= 16; i++) {
                 const li = document.createElement('li');
                 li.textContent = i;
                 li.addEventListener('click', () => {
                     rows = i;
+                    updateBoardSize();
                     createPegs();
                     rowOptionsList.style.display = 'none';
                 });
@@ -59,68 +198,13 @@
             rowOptionsList.style.display = rowOptionsList.style.display === 'block' ? 'none' : 'block';
         });
 
-        function createPegs() {
-            board.innerHTML = '';
-            const pegDistance = 40;
-            for (let y = 0; y < rows; y++) {
-                let pegOffsetX = (board.offsetWidth - pegDistance * (y + 1)) / 2;
-                for (let x = 0; x <= y; x++) {
-                    const peg = document.createElement('div');
-                    peg.classList.add('peg');
-                    peg.style.top = `${y * pegDistance}px`;
-                    peg.style.left = `${pegOffsetX + (x * pegDistance)}px`;
-                    board.appendChild(peg);
-                }
+        document.addEventListener("click", (event) => {
+            if (!rowSelectionBtn.contains(event.target) && !rowOptionsList.contains(event.target)) {
+                rowOptionsList.style.display = 'none';
             }
-            createBins();
-        }
+        });
 
-        function createBins() {
-            bins = [];
-            const binWidth = 40;
-            const totalBins = rows + 1;
-            for (let i = 0; i < totalBins; i++) {
-                const bin = document.createElement('div');
-                bin.classList.add('bin');
-                bin.style.left = `${(board.offsetWidth - (binWidth * totalBins)) / 2 + (i * binWidth)}px`;
-                bin.textContent = `${(Math.random() * 5).toFixed(1)}x`;
-                bins.push(bin);
-                board.appendChild(bin);
-            }
-        }
-
-        function updateChat(multiplier) {
-            const newMessage = document.createElement('li');
-            newMessage.textContent = `Ball hit ${multiplier} multiplier!`;
-            chatList.prepend(newMessage);
-        }
-
-        function dropBall() {
-            const ball = document.createElement('div');
-            ball.classList.add('ball');
-            ball.style.left = `${(board.offsetWidth - 20) / 2}px`;
-            ball.style.top = '0px';
-            board.appendChild(ball);
-            let positionY = 0;
-            function moveBall() {
-                if (positionY < board.offsetHeight - 30) {
-                    positionY += 2;
-                    ball.style.top = `${positionY}px`;
-                    requestAnimationFrame(moveBall);
-                } else {
-                    const binIndex = Math.floor((parseInt(ball.style.left) - 10) / 40);
-                    if (binIndex >= 0 && binIndex < bins.length) {
-                        updateChat(bins[binIndex].textContent);
-                    }
-                    setTimeout(() => ball.remove(), 500);
-                }
-            }
-            moveBall();
-        }
-
-        spawnBallBtn.addEventListener("click", dropBall);
         generateRowOptions();
-        createPegs();
     </script>
 </body>
 </html>
