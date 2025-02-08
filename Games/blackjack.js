@@ -1,5 +1,21 @@
 const cardBackImage = 'https://th.bing.com/th/id/OIP.LUhy335_mJGIBNske747TgHaKZ?w=128&h=181&c=7&r=0&o=5&pid=1.7';  // Image for card back
-const cardImage = 'https://example.com/card-image.png';  // Replace with your card image URL
+
+// Spade card images (using the URLs you provided)
+const cardImages = { 
+    '2': 'https://deckofcardsapi.com/static/img/2.png', 
+    '3': 'https://deckofcardsapi.com/static/img/3.png', 
+    '4': 'https://deckofcardsapi.com/static/img/4.png', 
+    '5': 'https://deckofcardsapi.com/static/img/5.png', 
+    '6': 'https://deckofcardsapi.com/static/img/6.png', 
+    '7': 'https://deckofcardsapi.com/static/img/7.png', 
+    '8': 'https://deckofcardsapi.com/static/img/8.png', 
+    '9': 'https://deckofcardsapi.com/static/img/9.png', 
+    '10': 'https://deckofcardsapi.com/static/img/10.png', 
+    'J': 'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/4d364ce1-cddf-46f1-8a9d-c0e8cc9c36cc/dawrv2l-d5e735db-bea6-46e2-be6a-51c4e289b36b.png/v1/fill/w_1024,h_1364,q_80,strp/my_playing_cards_v2___queen_of_spades_by_gabe0530_dawrv2l-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9MTM2NCIsInBhdGgiOiJcL2ZcLzRkMzY0Y2UxLWNkZGYtNDZmMS04YTlkLWMwZThjYzljMzZjY1wvZGF3cnYybC1kNWU3MzVkYi1iZWE2LTQ2ZTItYmU2YS01MWM0ZTI4OWIzNmIucG5nIiwid2lkdGgiOiI8PTEwMjQifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6aW1hZ2Uub3BlcmF0aW9ucyJdfQ.pLihV6HdFGd320zaUUf2N5STrKNH7KHndBhcw4GJh1k', 
+    'Q': 'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/4d364ce1-cddf-46f1-8a9d-c0e8cc9c36cc/dawrv2l-d5e735db-bea6-46e2-be6a-51c4e289b36b.png/v1/fill/w_1024,h_1364,q_80,strp/my_playing_cards_v2___queen_of_spades_by_gabe0530_dawrv2l-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9MTM2NCIsInBhdGgiOiJcL2ZcLzRkMzY0Y2UxLWNkZGYtNDZmMS04YTlkLWMwZThjYzljMzZjY1wvZGF3cnYybC1kNWU3MzVkYi1iZWE2LTQ2ZTItYmU2YS01MWM0ZTI4OWIzNmIucG5nIiwid2lkdGgiOiI8PTEwMjQifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6aW1hZ2Uub3BlcmF0aW9ucyJdfQ.pLihV6HdFGd320zaUUf2N5STrKNH7KHndBhcw4GJh1k', 
+    'K': 'https://thumbs.dreamstime.com/b/large-index-playing-card-king-spades-american-deck-122573720.jpg', 
+    'A': 'https://thumbs.dreamstime.com/b/ace-spades-playing-card-graphic-icon-230889606.jpg' 
+};
 
 let deck = [];
 let playerHand = [];
@@ -65,6 +81,12 @@ function updateScore(hand, isPlayer) {
     }
 }
 
+// Function to get the card image based on card value
+function getCardImage(cardValue) {
+    const value = cardValue.slice(0, -1); // Remove the suit to get the value
+    return cardImages[value];  // Return the image URL for the card value
+}
+
 // Render cards for player or dealer
 function renderCards(hand, isPlayer) {
     const cardDeck = isPlayer ? document.getElementById('player-cards') : document.getElementById('dealer-cards');
@@ -75,9 +97,9 @@ function renderCards(hand, isPlayer) {
         cardElement.classList.add('card');
         const cardValue = card.slice(0, -1);
 
-        // Show the card value
+        // Show the card image for player or the second card for dealer, show card back for first dealer card
         const cardImageElement = new Image();
-        cardImageElement.src = isPlayer || index > 0 ? cardImage : cardBackImage;  // Show card back if it's the dealer's first card
+        cardImageElement.src = isPlayer || index > 0 ? getCardImage(card) : cardBackImage;  // Show card back if it's the dealer's first card
         cardElement.appendChild(cardImageElement);
 
         cardDeck.appendChild(cardElement);
