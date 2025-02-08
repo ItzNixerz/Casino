@@ -33,11 +33,46 @@
             letter-spacing: 2px;
         }
 
+        /* Row Selection Dropdown */
+        #row-selection {
+            margin: 20px;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #333;
+            color: #fff;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+
+        /* Row options dropdown */
+        #row-options {
+            list-style: none;
+            padding: 0;
+            display: none;
+            position: absolute;
+            background-color: #333;
+            color: #fff;
+            border-radius: 5px;
+            margin-top: 10px;
+            width: 120px;
+            text-align: center;
+        }
+
+        #row-options li {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        #row-options li:hover {
+            background-color: #ff5722;
+        }
+
         /* Game Board */
         #game-board {
             position: relative;
-            width: 400px;
-            height: 600px;
+            width: 80%; /* Default width */
+            height: 80vh; /* Default height */
             margin: 30px auto;
             background-color: #f0f0f0;
             border: 2px solid #000;
@@ -73,14 +108,6 @@
             bottom: 0;
         }
 
-        /* Row Selection Button */
-        #row-btn {
-            margin: 20px;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
         /* Footer */
         footer {
             background-color: #333;
@@ -100,8 +127,11 @@
         <h1>Plinko Game</h1>
     </header>
 
-    <!-- Row Selection Button -->
-    <button id="row-btn">Select Number of Rows (5 to 16)</button>
+    <!-- Row Selection Dropdown -->
+    <button id="row-selection">Select Number of Rows</button>
+    <ul id="row-options">
+        <!-- Options will be populated here -->
+    </ul>
 
     <!-- Game Board Section -->
     <div id="game-board"></div>
@@ -113,13 +143,47 @@
 
     <script>
         const board = document.getElementById("game-board");
-        const rowBtn = document.getElementById("row-btn");
+        const rowSelectionBtn = document.getElementById("row-selection");
+        const rowOptionsList = document.getElementById("row-options");
         let rows = 5; // Default rows
         let bins = []; // Array to hold bins
+
+        // Function to generate the list of row options (5 to 16)
+        function generateRowOptions() {
+            for (let i = 5; i <= 16; i++) {
+                const li = document.createElement('li');
+                li.textContent = i;
+                li.addEventListener('click', () => {
+                    rows = i;
+                    updateBoardSize();
+                    createPegs(); // Regenerate pegs and bins based on new row count
+                    rowOptionsList.style.display = 'none'; // Hide the dropdown after selection
+                });
+                rowOptionsList.appendChild(li);
+            }
+        }
+
+        // Function to toggle the visibility of row options
+        rowSelectionBtn.addEventListener("click", () => {
+            rowOptionsList.style.display = rowOptionsList.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // Function to update the board size dynamically
+        function updateBoardSize() {
+            const width = Math.max(400, rows * 40); // Set minimum width based on number of rows
+            const height = rows * 60; // Set height proportional to the number of rows
+
+            // Set the width and height to fit the board nicely
+            board.style.width = `${width}px`;
+            board.style.height = `${height}px`;
+        }
 
         // Function to generate the pegs
         function createPegs() {
             board.innerHTML = ''; // Clear the board
+
+            // Update the size of the board
+            updateBoardSize();
 
             // Variables for the position of pegs
             const pegDistance = 40;
@@ -201,18 +265,14 @@
             moveBall();
         }
 
-        // Function to change the number of rows
-        rowBtn.addEventListener("click", () => {
-            rows = prompt("Enter the number of rows (5 to 16)", rows);
-            rows = Math.max(5, Math.min(16, rows)); // Ensure the value is between 5 and 16
-            createPegs();  // Recreate pegs and bins with the new row count
-        });
-
         // Generate the initial game board
         createPegs();
 
         // Simulate ball drop when clicked anywhere on the board
         board.addEventListener("click", dropBall);
+
+        // Initialize row options
+        generateRowOptions();
     </script>
 
 </body>
