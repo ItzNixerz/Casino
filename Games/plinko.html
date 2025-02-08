@@ -20,7 +20,8 @@
             color: #fff;
             text-align: center;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            align-items: center;
             min-height: 100vh;
         }
 
@@ -28,6 +29,8 @@
         header {
             background-color: #333;
             padding: 20px;
+            width: 100%;
+            text-align: center;
         }
 
         header h1 {
@@ -125,7 +128,10 @@
             padding: 20px;
             overflow-y: auto;
             border-radius: 10px;
-            margin-left: 20px;
+            position: fixed;
+            top: 0;
+            right: 20px;
+            margin-top: 20px;
         }
 
         #chat h3 {
@@ -175,6 +181,11 @@
     <!-- Spawn Ball Button -->
     <button id="spawn-ball-btn" style="padding: 10px; background-color: #333; color: #fff; border: none; border-radius: 5px; cursor: pointer;">Spawn Ball</button>
 
+    <!-- Footer Section -->
+    <footer>
+        <p>&copy; 2025 ItzNixer'z Casino - All rights reserved</p>
+    </footer>
+
     <!-- Chat Section -->
     <div id="chat">
         <h3>Ball Landing Chat</h3>
@@ -182,11 +193,6 @@
             <!-- Chat history will be appended here -->
         </ul>
     </div>
-
-    <!-- Footer Section -->
-    <footer>
-        <p>&copy; 2025 ItzNixer'z Casino - All rights reserved</p>
-    </footer>
 
     <script>
         const board = document.getElementById("game-board");
