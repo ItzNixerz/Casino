@@ -72,7 +72,7 @@
         #game-board {
             position: relative;
             width: 70%; /* Set the width to a fixed percentage */
-            height: 70vh; /* Set height to a fixed percentage */
+            height: 500px; /* Fixed height for the board */
             margin: 30px auto;
             background-color: #f0f0f0;
             border: 2px solid #000;
@@ -141,6 +141,9 @@
     <!-- Game Board Section -->
     <div id="game-board"></div>
 
+    <!-- Spawn Ball Button -->
+    <button id="spawn-ball-btn" style="padding: 10px; background-color: #333; color: #fff; border: none; border-radius: 5px; cursor: pointer;">Spawn Ball</button>
+
     <!-- Footer Section -->
     <footer>
         <p>&copy; 2025 ItzNixer'z Casino - All rights reserved</p>
@@ -150,6 +153,7 @@
         const board = document.getElementById("game-board");
         const rowSelectionBtn = document.getElementById("row-selection");
         const rowOptionsList = document.getElementById("row-options");
+        const spawnBallBtn = document.getElementById("spawn-ball-btn");
         let rows = 5; // Default rows
         let bins = []; // Array to hold bins
 
@@ -175,11 +179,9 @@
 
         // Function to update the board size dynamically
         function updateBoardSize() {
-            // Width remains fixed, height will adjust based on the number of rows
+            // Width remains fixed, height stays constant
             const width = 600;
-            const height = 60 + (rows * 50); // Height is based on the number of rows
             board.style.width = `${width}px`;
-            board.style.height = `${height}px`;
         }
 
         // Function to generate the pegs
@@ -192,7 +194,6 @@
             // Variables for the position of pegs
             const pegDistance = 40;
             const width = board.offsetWidth;
-            const height = board.offsetHeight;
 
             // Pegs grid generation logic (narrow at the top and wide at the bottom)
             for (let y = 0; y < rows; y++) {
@@ -216,8 +217,10 @@
             const binHeight = 30;
 
             const totalBins = rows + 1;
-            const multiplierRange = [0.2, 1000]; // Min and Max multiplier
-            const binMultiplier = (multiplierRange[1] - multiplierRange[0]) / (totalBins - 1); // Multiplier increment per bin
+            const multipliers = [0.2, 2, 5, 10, 25, 50, 100, 250, 500, 1000];
+            
+            // Randomly shuffle multipliers
+            multipliers.sort(() => Math.random() - 0.5);
 
             // Create bins centered at the bottom of the board
             for (let i = 0; i < totalBins; i++) {
@@ -228,7 +231,7 @@
                 bin.style.height = `${binHeight}px`;
 
                 // Assign a multiplier to each bin
-                const multiplier = (multiplierRange[0] + i * binMultiplier).toFixed(2);
+                const multiplier = multipliers[i % multipliers.length].toFixed(1);
                 bin.textContent = `${multiplier}x`;
 
                 bins.push(bin);
@@ -279,11 +282,11 @@
             moveBall();
         }
 
+        // Add event listener to spawn ball button
+        spawnBallBtn.addEventListener("click", dropBall);
+
         // Generate the initial game board
         createPegs();
-
-        // Simulate ball drop when clicked anywhere on the board
-        board.addEventListener("click", dropBall);
 
         // Initialize row options
         generateRowOptions();
